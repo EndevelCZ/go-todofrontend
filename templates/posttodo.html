@@ -1,0 +1,12 @@
+{{define "title"}}create todo{{end}}
+
+{{define "body"}}
+    <h1>Create todo</h1>
+    <form action=/posttodos method="post" enctype="application/x-www-form-urlencoded">
+        <div class="form-group">
+            <label for="todo_text">Todo text</label>
+            <input type="text" class="form-control" id="todo_text" placeholder="todo text" name="todo_text">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{{end}}

@@ -1,0 +1,88 @@
+
+{{define "title"}}Dosa Diner{{end}}
+
+{{define "body"}}
+
+<div class="row">
+    <h1>Hello, world!</h1>
+    <table class="table">
+        <tr>
+            <td>Text</td>
+            <td>Delete</td>
+        </tr>
+        {{ range .Todos}} 
+            <tr>
+                <td>
+                    <div class="custom-control custom-checkbox">
+                        {{if .Done}}
+                        <input onclick="checkTodo({{.Id}}, {{.Done}}, this)" type="checkbox" class="custom-control-input" id="check{{.Id}}" checked="checked">
+                        <label class="custom-control-label" for="check{{.Id}}"><del>{{ .Text }}</del></label> 
+                        {{ else }}
+                        <input onclick="checkTodo({{.Id}}, {{.Done}}, this)" type="checkbox" class="custom-control-input" id="check{{.Id}}" >
+                        <label class="custom-control-label" for="check{{.Id}}">{{ .Text }}</label> 
+                        {{ end}}
+                        
+                    </div>
+                </td>
+                <td><button type="button" class="btn btn-danger" onclick="deleteTodo({{.Id}}, this)">DELETE</button></td>
+
+            </tr>
+        {{end}}
+    </table>
+    <a class="btn btn-primary" href="/posttodos">create todo</a>
+</div>
+
+<script>
+function deleteTodo(id, btn) {
+    var url = `/todos/${id}`;
+    var xhr = new XMLHttpRequest();
+    xhr.open("DELETE", url, true);
+    xhr.onload = function () {
+        // var todos = JSON.parse(xhr.responseText);
+        if (xhr.readyState == 4 && xhr.status == "200") {
+            console.table(xhr.responseText);
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        } else {
+            console.error(xhr.responseText);
+        }
+    }
+    xhr.send(null);
+}
+
+function checkTodo(id, done, btn) {
+    var url = `/todos/${id}`;
+    var data = {};
+    data.Done = !done;
+    var json = JSON.stringify(data);
+    var xhr = new XMLHttpRequest();
+    xhr.open("PATCH", url, true);
+    xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+    xhr.onload = function () {
+        var todo = JSON.parse(xhr.responseText);
+        if (xhr.readyState == 4 && xhr.status == "200") {
+            // alert(todos["done"])
+            console.log(todo);
+            var row = btn.parentNode;
+            var children = row.children;
+            for (var i = 0; i < children.length; i++) {
+                if(children[i].className == "custom-control-label"){
+                    console.log(children[i].innerHTML)
+                    if(todo.done === true){
+                        children[i].innerHTML = "<del>" + todo.text + "</del>"
+                        
+                    } else {
+                        children[i].innerHTML = todo.text
+                    }
+                    console.log(children[i].innerHTML)
+                }
+            }
+        } else {
+            console.error(todo);
+        }
+    }
+    xhr.send(json);
+
+}
+</script>
+{{end}}
